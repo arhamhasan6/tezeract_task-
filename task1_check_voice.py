@@ -4,7 +4,7 @@ from pymediainfo import MediaInfo
 import task1_subtitles_withoutvoice
 import task1_subtitles_withvoice
 
-def check_audio(file_path, interval=3):
+def check_audio(file_path, interval):
     fileInfo = MediaInfo.parse(file_path) 
     x = any([track.track_type == 'Audio' for track in fileInfo.tracks]) #method 1 for checking audio stream in a video
 
