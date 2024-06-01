@@ -154,7 +154,7 @@ The script can be run from the command line. Below are the available options and
 ### Example
 
 ```sh
-python task2.py "path/to/video.mp4" "write activity to be detected"  --interval 4
+python task2_croppingvideo.py "path/to/video.mp4" "write activity to be detected"  --interval 4
 ```
 
 ## Script Description
