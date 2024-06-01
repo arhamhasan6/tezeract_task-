@@ -176,7 +176,7 @@ def video_with_voice(video_path):
     model_path= whisper.load_model("base")
 
     # Create an instance of the VideoTranscriber class
-    transcriber = VideoTranscriber(r"whisper_model\tiny.pt", video_path)
+    transcriber = VideoTranscriber(r"tezeract_task-\whisper_model\tiny.pt", video_path)
 
     # Extract audio from the video
     transcriber.extract_audio()
