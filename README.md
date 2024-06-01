@@ -145,13 +145,14 @@ The script can be run from the command line. Below are the available options and
 ### Command Line Arguments
 
 - `video_path` (str): Path to the input video file.
+- - `activity` (str): string for cropping the activity.
 - `--folder_path` (str, optional): Path to the folder where keyframes will be saved. Default is "output_frames".
 - `--interval` (int, optional): Interval in seconds for extracting keyframes. Default is 4 seconds.
 
 ### Example
 
 ```sh
-python task2.py "path/to/video.mp4" --folder_path "output_frames" --interval 4
+python task2.py "path/to/video.mp4" "write activity to be detected"  --interval 4
 ```
 
 ## Script Description
