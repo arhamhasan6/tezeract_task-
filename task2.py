@@ -4,7 +4,7 @@ import argparse
 from moviepy.editor import VideoFileClip, concatenate_videoclips
 from PIL import Image
 import keyframe_generate  # Assuming you have a module for extracting keyframes
-import google.generativeai as genai # Assuming you have a module for generative AI model configuration
+import google.generativeai as genai  # Assuming you have a module for generative AI model configuration
 
 def extract_keyframes(video_path, folder_path, interval):
     """
@@ -74,21 +74,23 @@ def extract_yes_segments(video, text, video_duration):
     """
     yes_segments = []
     for start, end, activity in text:
-        if activity == 'yes':
+        if activity == 'yes' or  activity == ' yes':
             if start < video_duration:
                 end = min(end, video_duration)
                 yes_segments.append(video.subclip(start, end))
     return yes_segments
 
-def main(video_path, folder_path="output_frames", interval=4):
+def main(video_path, activity, folder_path="output_frames", interval=4):
     """
     Main function to process a video, extract keyframes, generate text descriptions, and create a final video with identified segments.
 
     Parameters:
     - video_path (str): Path to the input video file.
+    - activity (str): The activity to recognize in the video.
     - folder_path (str, optional): Path to the folder for saving keyframes. Default is "output_frames".
     - interval (int, optional): Interval in seconds between keyframes. Default is 4 seconds.
     """
+    video = None
     try:
         # Step 1: Extract keyframes
         extract_keyframes(video_path, folder_path, interval)
@@ -101,7 +103,6 @@ def main(video_path, folder_path="output_frames", interval=4):
         model = genai.GenerativeModel("gemini-pro-vision")
 
         # Step 4: Generate text from images
-        activity = 'a girl walking down stairs'
         text = generate_text_from_images(images, model, activity, interval)
 
         # Step 5: Load the original video
@@ -126,11 +127,12 @@ def main(video_path, folder_path="output_frames", interval=4):
     finally:
         # Clean up resources
         try:
-            video.reader.close()
-            video.audio.reader.close_proc()
+            if video:
+                video.reader.close()
+                video.audio.reader.close_proc()
         except Exception as cleanup_error:
             print(f"Error during cleanup: {cleanup_error}")
-        
+
         if os.path.exists(folder_path):
             try:
                 shutil.rmtree(folder_path)
@@ -140,8 +142,9 @@ def main(video_path, folder_path="output_frames", interval=4):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Process video to extract keyframes and generate segments based on activity recognition.")
     parser.add_argument("video_path", help="Path to the input video file")
+    parser.add_argument("activity", type=str, help="The activity to recognize in the video")
     parser.add_argument("--folder_path", default="output_frames", help="Path to the folder where keyframes will be saved")
-    parser.add_argument("--interval", type=int, default=4, help="Interval in seconds for extracting keyframes")
+    parser.add_argument("--interval", type=int, default=3, help="Interval in seconds for extracting keyframes")
 
     args = parser.parse_args()
-    main(args.video_path, args.folder_path, args.interval)
+    main(args.video_path, args.activity, args.folder_path, args.interval)
