@@ -26,6 +26,7 @@ moviepy
 google-generativeai
 opencv-python
 ```
+## install imagemagick separately if not installed
 
 ## Usage
 
