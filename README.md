@@ -1,3 +1,4 @@
+#### `use videos with length less than equal to 1 minute for optimal performance due to api call limitation of gemini`
 ## `Task1`
 ```markdown
 # Video Subtitle and Activity Recognition
