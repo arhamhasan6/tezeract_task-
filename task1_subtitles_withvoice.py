@@ -115,7 +115,6 @@ class VideoTranscriber:
         cap = cv2.VideoCapture(self.video_path)
         width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
         height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-        asp = width / height
         N_frames = 0
         
         while True:
@@ -123,18 +122,16 @@ class VideoTranscriber:
             if not ret:
                 break
             
-            frame = frame[:, int(int(width - 1 / asp * height) / 2):width - int((width - 1 / asp * height) / 2)]
-            
             for i in self.text_array:
                 if N_frames >= i[1] and N_frames <= i[2]:
                     text = i[0]
                     text_size, _ = cv2.getTextSize(text, cv2.FONT_HERSHEY_SIMPLEX, 0.8, 2)
                     text_x = int((frame.shape[1] - text_size[0]) / 2)
                     text_y = int(height/2)
-                    cv2.putText(frame, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 255), 2)
+                    cv2.putText(frame, text, (text_x, text_y), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 0, 0), 2)
                     break
             
-            cv2.imwrite(os.path.join(output_folder, str(N_frames) + ".jpg"), frame)
+            cv2.imwrite(os.path.join(output_folder, f"{N_frames:05d}.jpg"), frame)
             N_frames += 1
         
         cap.release()
@@ -160,12 +157,16 @@ class VideoTranscriber:
         frame = cv2.imread(os.path.join(image_folder, images[0]))
         height, width, layers = frame.shape
         
+        # Create video from images
         clip = ImageSequenceClip([os.path.join(image_folder, image) for image in images], fps=self.fps)
         audio = AudioFileClip(self.audio_path)
         clip = clip.set_audio(audio)
-        clip.write_videofile(output_video_path)
+        clip.write_videofile(output_video_path, codec='libx264')
+        
+        # Clean up
         shutil.rmtree(image_folder)
         os.remove(os.path.join(os.path.dirname(self.video_path), "audio.mp3"))
+        print('Video created successfully')
 
 # Example usage
 video_path = "test2.mp4"
@@ -175,13 +176,15 @@ def video_with_voice(video_path):
     model_path= whisper.load_model("base")
 
     # Create an instance of the VideoTranscriber class
-    transcriber = VideoTranscriber(r"C:\Users\arham\.cache\whisper\base.pt", video_path)
+    transcriber = VideoTranscriber(r"whisper_model\tiny.pt", video_path)
 
     # Extract audio from the video
     transcriber.extract_audio()
 
     # Transcribe the video
     transcriber.transcribe_video()
+    base_name = os.path.basename(video_path)
+    video_name, _ = os.path.splitext(base_name)
 
     output_directory = os.path.dirname(video_path)
     output_video_path = os.path.join(output_directory, "output_voicevideo_with_subtitles.mp4")
